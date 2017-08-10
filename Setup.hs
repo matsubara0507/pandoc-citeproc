@@ -34,7 +34,7 @@ installManPage _ flags pkg lbi = do
      [("man/man1", "pandoc-citeproc.1")]
 
 ppBlobSuffixHandler :: PPSuffixHandler
-ppBlobSuffixHandler = ("hsb", \_ _ ->
+ppBlobSuffixHandler = ("hsb", \_ _ _ ->
   PreProcessor {
     platformIndependent = True,
     runPreProcessor = mkSimplePreProcessor $ \infile outfile verbosity ->
