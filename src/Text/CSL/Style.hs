@@ -223,9 +223,16 @@ instance AddYaml Formatted where
                       then acc
                       else (x Y..= Formatted y) : acc
 
+#if MIN_VERSION_base(4,11,0)
+instance Semigroup Formatted where
+  (<>) = appendWithPunct
+#endif
+
 instance Monoid Formatted where
   mempty = Formatted []
+#if !MIN_VERSION_base(4,11,0)
   mappend = appendWithPunct
+#endif
   mconcat = foldr mappend mempty
 
 instance Walk.Walkable Inline Formatted where
@@ -938,4 +945,3 @@ instance OVERLAPS
 
 -- instance ToJSON [Agent] where
 -- toJSON xs  = Array (V.fromList $ map toJSON xs)
-

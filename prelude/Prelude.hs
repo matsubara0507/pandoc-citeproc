@@ -11,11 +11,15 @@ module Prelude
 , (<$>)
 , (<$)
 #endif
+#if !MIN_VERSION_base(4,11,0)
 , (<>)
+#endif
 )
 where
 
-#if MIN_VERSION_base(4,8,0)
+#if MIN_VERSION_base(4,11,0)
+import "base" Prelude as P
+#elif MIN_VERSION_base(4,8,0)
 import "base" Prelude as P
 import Data.Monoid ((<>))
 #elif MIN_VERSION_base(4,6,0)

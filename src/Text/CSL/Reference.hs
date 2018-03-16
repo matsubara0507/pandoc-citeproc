@@ -83,8 +83,13 @@ import           Text.Pandoc         (Inline (Str))
 import qualified Text.Parsec         as P
 import qualified Text.Parsec.String  as P
 
+#if MIN_VERSION_base(4,11,0)
+newtype Literal = Literal { unLiteral :: String }
+  deriving ( Show, Read, Eq, Data, Typeable, Semigroup, Monoid, Generic )
+#else
 newtype Literal = Literal { unLiteral :: String }
   deriving ( Show, Read, Eq, Data, Typeable, Monoid, Generic )
+#endif
 
 instance AddYaml Literal
   where x &= (Literal y) = x &= (T.pack y)
@@ -387,9 +392,19 @@ instance ToYaml CNum where
 
 newtype CLabel = CLabel { unCLabel :: String } deriving ( Show, Read, Eq, Typeable, Data, Generic )
 
+appendClabel :: CLabel -> CLabel -> CLabel
+appendClabel (CLabel a) (CLabel b) = CLabel (mappend a b)
+
+#if MIN_VERSION_base(4,11,0)
+instance Semigroup CLabel where
+  (<>) = appendClabel
+#endif
+
 instance Monoid CLabel where
     mempty = CLabel mempty
-    mappend (CLabel a) (CLabel b) = CLabel (mappend a b)
+#if !MIN_VERSION_base(4,11,0)
+    mappend = appendClabel
+#endif
 
 instance FromJSON CLabel where
   parseJSON x = CLabel `fmap` parseString x
@@ -1055,4 +1070,3 @@ rawDateOld = do
                ]
   d1 <- date
   P.option [d1] ((\x -> [d1,x]) <$> (rangesep >> date))
-
